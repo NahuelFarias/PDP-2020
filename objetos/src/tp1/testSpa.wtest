@@ -1,0 +1,26 @@
+import personas.*
+import spa.*
+
+describe "Tests integrales: ejercicio 1" {
+	test "Luego de que el spa atienda a Olivia, ella está feliz"{
+		spa.atender(olivia)
+		assert.that(olivia.esFeliz())
+	}
+	
+	test "Si Olivia se atiende 3 veces en el spa, su concentración queda en 22" {
+		3.times {n=> spa.atender(olivia)}
+		assert.equals(olivia.gradoDeConcentracion(), 22)
+	}
+}
+
+describe "Tests integrales: ejercicio 2" {
+	test "Luego de que el spa atienda a Adriano, su nivel de contractura baja a 3"{
+		spa.atender(adriano);
+		assert.equals(adriano.nivelDeContractura(), 3)
+	}
+	
+	test "Luego de que el spa atienda a Adriano, está fresco para programar"{
+		spa.atender(adriano)
+		assert.that(adriano.frescoParaProgramar())
+	}
+}

@@ -1,0 +1,57 @@
+import naves.*
+
+describe "Nave de pasajeros" {
+	test "Velocidad maxima sin pasajeros" {
+		const naveSinPasajeros = new NaveDePasajeros()
+		assert.equals(75000, naveSinPasajeros.velocidadMaxima())
+	}
+
+	test "Velocidad maxima con muchos pasajeros" {
+		const naveConPasajeros = new NaveDePasajeros(cantidadDePasajeros = 296)
+		assert.equals(1000 - 200, naveConPasajeros.velocidadMaxima())
+	}
+	test "Cuando una nave de pasajeros recibe una amenaza, se activa la alarma" {
+		const nave = new NaveDePasajeros()
+		nave.recibirAmenaza()
+		assert.that(nave.alarma())
+	}
+	
+	test "Se puede propulsar una nave de pasajeros" {
+		const nave = new NaveDePasajeros()
+		nave.velocidad(190000)
+		nave.propulsar()
+		assert.equals(210000, nave.velocidad())
+	}
+	
+	test "Si la nave de pasajeros no está excedida de velocidad y su alarma está apagada, no está en peligro" {
+		const nave = new NaveDePasajeros()
+		nave.cantidadDePasajeros(6)
+		nave.velocidad(1000)
+		assert.notThat(nave.enPeligro())
+	}
+	test "Si la nave de pasajeros no está excedida de velocidad pero su alarma está encendida, está en peligro" {
+		const nave = new NaveDePasajeros()
+		nave.cantidadDePasajeros(6)
+		nave.velocidad(1000)
+		nave.alarma(true)
+		assert.that(nave.enPeligro())
+	}
+	test "Si la nave de pasajeros está excedida de velocidad, está en peligro" {
+		const nave = new NaveDePasajeros()
+		nave.cantidadDePasajeros(6)
+		nave.velocidad(200000)
+		assert.that(nave.enPeligro())
+	}
+	
+	test "Cuando una nave de pasajeros se encuentra con un enemigo activa su alarma" {
+		const nave = new NaveDePasajeros()
+		nave.encuentraEnemigo()
+		assert.that(nave.alarma())
+	}
+	test "Cuando una nave de pasajeros se encuentra con un enemigo se propulsa" {
+		const nave = new NaveDePasajeros()
+		nave.velocidad(0)
+		nave.encuentraEnemigo()
+		assert.equals(20000, nave.velocidad())
+	}
+}

@@ -1,0 +1,82 @@
+import supermercado.*
+
+describe "Supermercado" {
+	method crearProductoDeVentaUnitaria(descripcion, precioUnitario){
+		// TODO crear y retornar el producto correspondiente
+		return new ProductoUnitario(descripcion = descripcion, precioUnitario = precioUnitario) 
+	}
+	method crearProductoDeVentaPorPeso(descripcion, precioPorKilo, peso){
+		// TODO crear y retornar el producto correspondiente
+		return new ProductoPorPeso(descripcion = descripcion, precioPorKilo = precioPorKilo, peso = peso)
+	}
+	
+	test "Se puede agregar un producto" {
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Chocolate", 20))
+		assert.equals(1, carrito.cantidadDeProductos())
+	}
+	test "El carrito está vacío cuando no se le agregaron productos"{
+		assert.that(carrito.estaVacio())
+	}
+	test "El carrito no está vacío cuando se le agregaron productos"{
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Aceite de girasol", 60.75))
+		assert.notThat(carrito.estaVacio())
+	}
+	test "La cantidad total de productos cuando el carrito está vacío es 0"{
+		assert.equals(0, carrito.cantidadDeProductos())
+	}
+	test "Cantidad de productos cuando al carrito se le agregan todos productos diferentes"{
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Chocolate", 20))
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Leche", 30))
+		carrito.agregar(self.crearProductoDeVentaPorPeso("Queso cremoso", 320, 0.3))
+		assert.equals(3, carrito.cantidadDeProductos())
+	}
+	
+	test "Si se agrega dos veces un mismo producto al carrito, se considera dos veces para la cantidad de productos" {
+		const chocolate = self.crearProductoDeVentaUnitaria("Chocolate", 20)
+		carrito.agregar(chocolate)
+		carrito.agregar(chocolate)
+		assert.equals(2, carrito.cantidadDeProductos())
+	}
+	
+	test "El valor a abonar cuando el carrito está vacío es 0" {
+		assert.equals(0, carrito.totalAAbonar())
+	}
+	test "El valor a abonar cuando el carrito tiene varios productos es la suma de los precios de los productos que se agregaron" {
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Chocolate", 20))
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Leche", 30))
+		carrito.agregar(self.crearProductoDeVentaPorPeso("Queso cremoso", 320, 0.3))
+		assert.equals(20 + 30 + 320 * 0.3, carrito.totalAAbonar())
+	}
+	test "El valor a abonar cuando al carrito sólo se le agregó un mismo producto 2 veces, es el doble del precio de ese producto" {
+		const chocolate = self.crearProductoDeVentaUnitaria("Chocolate", 20)
+		carrito.agregar(chocolate)
+		carrito.agregar(chocolate)
+		assert.equals(20*2, carrito.totalAAbonar())
+	}
+	test "Se puede conocer el producto más caro de un carrito que tiene productos" {
+		const productoMasCaro = self.crearProductoDeVentaPorPeso("Papas", 40, 3)
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Aceite de girasol", 60.75))
+		carrito.agregar(productoMasCaro)
+		carrito.agregar(self.crearProductoDeVentaUnitaria("Leche", 30))
+		
+		assert.equals(productoMasCaro, carrito.productoMasCaro())
+	}
+	test "No se puede conocer el producto más caro de un carrito vacío" {
+		// TODO: probar lo que pasa cuando se le manda productoMasCaro() al carrito sin agregarle productos
+		assert.throwsException({carrito.productoMasCaro()})
+		}
+	
+	test "El detalle de la compra no tiene repetidos y está en orden alfabético" {
+		const chocolate = self.crearProductoDeVentaUnitaria("Chocolate", 20)
+		const leche = self.crearProductoDeVentaUnitaria("Leche", 30)
+		const queso = self.crearProductoDeVentaPorPeso("Queso cremoso", 320, 0.3)
+		
+		carrito.agregar(queso)
+		carrito.agregar(leche)
+		carrito.agregar(leche)
+		carrito.agregar(chocolate)
+		
+		// TODO: probar lo que pasa cuando se le manda detalleDeCompra() al carrito
+		assert.equals(["Chocolate", "Leche", "Queso cremoso"], carrito.detalleDeCompra())
+	}
+}

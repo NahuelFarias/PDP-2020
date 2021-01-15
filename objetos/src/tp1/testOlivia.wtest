@@ -1,0 +1,42 @@
+import personas.olivia
+
+describe "Comportamiento de Olivia" {
+	test "Olivia inicialmente tiene 4 de grado de concentracion" {
+		assert.equals(4, olivia.gradoDeConcentracion())
+	}
+	
+	test "Olivia recibe masajes pocas veces y su grado de concentracion aumenta un poco" {
+		olivia.recibirMasajes()
+		assert.equals(olivia.gradoDeConcentracion(), 6)	
+	}
+	
+	test "Olivia recibe masajes muchas veces y su grado de concentracion aumenta bastante más al estar relajada" {
+		4.times {n=> olivia.recibirMasajes()}
+		assert.equals(olivia.gradoDeConcentracion(), 18)	
+	}
+	
+	test "Inicialmente Olivia no es feliz" {
+		assert.notThat(olivia.esFeliz())
+	}
+	
+	test "Luego de 2 masajes Olivia es feliz" {
+		2.times {n=> olivia.recibirMasajes()}
+		assert.that(olivia.esFeliz())
+	}
+	
+	test "Si Olivia discute con concentración baja, su concentración se mantiene igual" {
+		olivia.discutir()
+		assert.equals(olivia.gradoDeConcentracion(), 4)
+	}
+	
+	test "Si Olivia discute estando suficientemente concentrada, su concentración queda en 5" {
+		olivia.recibirMasajes()
+		olivia.discutir()
+		assert.equals(olivia.gradoDeConcentracion(), 5)
+	}
+	
+	test "Si Olivia se da un baño de vapor, aumenta su concentración" {
+		olivia.darseUnBanioDeVapor(10)
+		assert.equals(olivia.gradoDeConcentracion(), 6)
+	}
+}

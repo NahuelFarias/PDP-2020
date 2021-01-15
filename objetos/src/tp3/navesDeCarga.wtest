@@ -1,0 +1,101 @@
+import naves.*
+
+describe "Nave de carga" {
+	const naveCargada = new NaveDeCarga(carga = 50)
+
+	test "La nave no está sobrecargada si no supera las 100 toneladas" {
+		assert.notThat(naveCargada.sobrecargada())
+	}
+
+	test "Una nave de carga está excedida de velocidad si va a más de 100000" {
+		naveCargada.velocidad(110000)
+		assert.that(naveCargada.excedidaDeVelocidad())
+	}
+		
+	test "Una nave de carga no está excedida de velocidad si va a más de 80000 pero menos de 100000" {
+		naveCargada.velocidad(90000)
+		assert.notThat(naveCargada.excedidaDeVelocidad())
+	}
+	
+	test "Cuando una nave de carga recibe una amenaza, descarta su carga" {
+		naveCargada.recibirAmenaza()
+		assert.equals(0, naveCargada.carga())
+	}
+
+	test "Se puede propulsar una nave de carga" {
+		naveCargada.velocidad(0)
+		naveCargada.propulsar()
+		assert.equals(20000, naveCargada.velocidad())
+	}
+	
+	test "Cuando una nave que va a 75000 y encuentra a un enemigo, queda con una velociadad de 95000" {
+		naveCargada.velocidad(75000)
+		naveCargada.encuentraEnemigo()
+		assert.equals(95000, naveCargada.velocidad())
+	}
+}
+
+describe "Nave de carga sobrecargada" {
+	const naveSobrecargada = new NaveDeCarga(carga = 500)
+	
+	test "La nave está sobrecargada si supera las 100 toneladas" {
+		assert.that(naveSobrecargada.sobrecargada())
+	}
+	
+	test "Una nave sobrecargada está excedida de velocidad si va a más de 80000" {
+		naveSobrecargada.velocidad(90000)
+		assert.that(naveSobrecargada.excedidaDeVelocidad())
+	}
+
+	test "Una nave sobrecargada no está excedida de velocidad si va lento" {
+		naveSobrecargada.velocidad(9000)
+		assert.notThat(naveSobrecargada.excedidaDeVelocidad())
+	}
+	
+	test "Si la nave está excedida de velocidad, está en peligro" {
+		naveSobrecargada.velocidad(60000)
+		assert.notThat(naveSobrecargada.enPeligro())
+	}
+	
+	test "Si la nave no está excedida de velocidad, no está en peligro" {
+		naveSobrecargada.velocidad(90000)
+		assert.that(naveSobrecargada.enPeligro())
+	}
+	
+	test "Cuando una nave que va a 85000 y encuentra a un enemigo, excede su velocidad maxima" {
+		naveSobrecargada.velocidad(85000)
+		naveSobrecargada.encuentraEnemigo()
+		assert.that(naveSobrecargada.excedidaDeVelocidad())
+	}
+	
+	test "Cuando una nave que va a 75000 y encuentra a un enemigo, queda con una velociadad de 95000" {
+		naveSobrecargada.velocidad(75000)
+		naveSobrecargada.encuentraEnemigo()
+		assert.equals(95000, naveSobrecargada.velocidad())
+	}
+}
+
+describe "Nave de carga de residuos radioactivos" {
+	
+	test "Una nave que transporta residuos radioactivos no los descarga al recibir una amenaza" {
+		const naveDeResiduos = new NaveDeResiduosRadioactivos(carga = 5, velocidad = 10000)
+		naveDeResiduos.recibirAmenaza()
+		assert.equals(5, naveDeResiduos.carga())
+	}
+	test "Una nave que transporta residuos radioactivos frena al recibir una amenaza" {
+		const naveDeResiduos = new NaveDeResiduosRadioactivos(carga = 5, velocidad = 10000)
+		naveDeResiduos.recibirAmenaza()
+		assert.equals(0, naveDeResiduos.velocidad())
+	}
+	
+	test "La velocidad máxima de una nave de carga de residuos radioactivos es el 75% de una nave de carga con la misma carga"{
+		const naveDeResiduos = new NaveDeResiduosRadioactivos(carga = 110, velocidad = 10000)
+		assert.equals(60000, naveDeResiduos.velocidadMaxima())
+	}
+	
+	test "Cuando una nave de carga de residuos radioactivos se encuentra con un enemigo se frena y luego se propulsa" {
+		const naveDeResiduos = new NaveDeResiduosRadioactivos(carga = 110, velocidad = 50000)
+		naveDeResiduos.encuentraEnemigo()
+		assert.equals(20000, naveDeResiduos.velocidad())
+	}
+}

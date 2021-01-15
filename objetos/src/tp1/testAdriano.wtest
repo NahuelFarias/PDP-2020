@@ -1,0 +1,55 @@
+import personas.adriano
+
+describe "Comportamiento de Adriano" {
+	
+	test "Frescura para programar inicial de Adriano" {
+		assert.that(adriano.frescoParaProgramar())
+	}
+	
+	test "El nivel de contractura inicial de Adriano es 5" {
+		assert.equals(5, adriano.nivelDeContractura())
+	}
+	
+	test "Luego de trabajar, Adriano no está fresco para programar" {
+		adriano.trabajarUnDia()
+		assert.notThat(adriano.frescoParaProgramar())
+	}
+	
+	test "Adriano tiene un día de trabajo y se contractura" {
+		adriano.trabajarUnDia()
+		assert.equals(7, adriano.nivelDeContractura())
+	}
+	
+	test "Adriano trabaja dos días seguidos y se contractura mucho" {
+		2.times({n => adriano.trabajarUnDia()})
+		assert.equals(11, adriano.nivelDeContractura())
+	}
+		
+	// Casos de prueba adicionales para adriano que considero relevantes
+	test "Adriano despues de comer una Big Mac, esta fresco para programar" {
+		adriano.comerseUnBigMac()
+		assert.that(adriano.frescoParaProgramar())
+	}
+	
+	test "Si Adriano esta fresco para programar, despues de codear el nivel de contractura de Adriano es de 6" {
+		adriano.codear()
+		assert.equals(6, adriano.nivelDeContractura())
+	}
+	
+	test "Si Adriano no esta fresco para programar, despues de codear el nivel de contractura de Adriano es de 8" {
+		adriano.frescoParaProgramar(false)
+		adriano.codear()
+		assert.equals(8, adriano.nivelDeContractura())
+	}
+	
+	test "Si Adriano se clava una Big Mac despues de trabajar, esta fresco para programar" {
+		adriano.trabajarUnDia()
+		adriano.comerseUnBigMac()
+		assert.that(adriano.frescoParaProgramar())
+	}
+	
+	test "Aunque Adriano reciba 10 masajes, su nivel de contractura minimo sera 0" {
+		10.times({n => adriano.recibirMasajes()})
+		assert.equals(0, adriano.nivelDeContractura())
+	}
+}

@@ -1,0 +1,55 @@
+import fabricaDeObjetosDePrueba.*
+import usuario.*
+
+describe "Cuándo es visible el contenido con lista negra" {
+	const usuariosParaListaNegra = #{new Usuario(nombre = "Lola"), new Usuario(nombre = "Pepe")}
+	
+	fixture {
+		fabrica.configurarContactos()
+		usuariosParaListaNegra.forEach {usuario => 
+			fabrica.creador().agregarContacto(usuario)
+		}
+	}
+	
+	method contactoNoExcluido() = fabrica.creador().contactos().find {contacto =>
+		not usuariosParaListaNegra.contains(contacto)
+	}
+	method contactoExcluido() = usuariosParaListaNegra.anyOne()
+	
+	test "Una publicacion con lista negra la puede ver quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionConListaNegra(usuariosParaListaNegra)
+		assert.that(contenido.esVisible(fabrica.creador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una publicacion con lista negra la puede ver un contacto no excluído de quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionConListaNegra(usuariosParaListaNegra)
+		assert.that(contenido.esVisible(self.contactoNoExcluido(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una publicacion con lista negra no la puede ver un contacto excluído de quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionConListaNegra(usuariosParaListaNegra)
+		assert.notThat(contenido.esVisible(self.contactoExcluido(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una publicacion con lista negra no la puede ver un desconocido de quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionConListaNegra(usuariosParaListaNegra)
+		assert.notThat(contenido.esVisible(fabrica.desconocido(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una historia con lista negra la puede ver quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra)
+		assert.that(contenido.esVisible(fabrica.creador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una historia con lista negra la puede ver un contacto no excluído de quien la publicó hasta un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra)
+		assert.that(contenido.esVisible(self.contactoNoExcluido(), fabrica.diaSiguienteAPublicacion()))
+	}
+	test "Una historia con lista negra NO la puede ver un contacto no excluído de quien la publicó pasado más de un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra)
+		assert.notThat(contenido.esVisible(self.contactoNoExcluido(), fabrica.diaSiguienteAPublicacion().plusDays(1)))
+	}
+	test "Una historia con lista negra NO la puede ver un contacto excluído de quien la publicó hasta un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra)
+		assert.notThat(contenido.esVisible(self.contactoExcluido(), fabrica.diaSiguienteAPublicacion()))
+	}
+	test "Una historia con lista negra NO la puede ver un desconocido de quien la publicó hasta un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra)
+		assert.notThat(contenido.esVisible(fabrica.desconocido(), fabrica.diaSiguienteAPublicacion()))
+	}
+}

@@ -1,0 +1,40 @@
+import fabricaDeObjetosDePrueba.*
+
+describe "Cuándo es visible el contenido público" {
+	fixture {
+		fabrica.configurarContactos()
+	}
+	
+	test "Una publicacion pública la puede ver quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionPublica()
+		assert.that(contenido.esVisible(fabrica.creador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una publicacion pública la puede ver un contacto de quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionPublica()
+		assert.that(contenido.esVisible(fabrica.contactoDelCreador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una publicacion pública la puede ver un desconocido de quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionPublica()
+		assert.that(contenido.esVisible(fabrica.desconocido(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una historia pública la puede ver quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearHistoriaPublica()
+		assert.that(contenido.esVisible(fabrica.creador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una historia pública la puede ver un contacto de quien la publicó hasta un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaPublica()
+		assert.that(contenido.esVisible(fabrica.contactoDelCreador(), fabrica.diaSiguienteAPublicacion()))
+	}
+	test "Una historia pública NO la puede ver un contacto de quien la publicó pasado más de un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaPublica()
+		assert.notThat(contenido.esVisible(fabrica.contactoDelCreador(), fabrica.diaSiguienteAPublicacion().plusDays(1)))
+	}
+	test "Una historia pública la puede ver un desconocido de quien la publicó hasta un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaPublica()
+		assert.that(contenido.esVisible(fabrica.desconocido(), fabrica.diaSiguienteAPublicacion()))
+	}
+	test "Una historia pública NO la puede ver un desconocido de quien la publicó pasado más de un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaPublica()
+		assert.notThat(contenido.esVisible(fabrica.desconocido(), fabrica.diaSiguienteAPublicacion().plusDays(1)))
+	}
+}

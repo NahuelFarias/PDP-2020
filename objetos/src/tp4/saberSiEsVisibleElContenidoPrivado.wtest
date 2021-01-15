@@ -1,0 +1,36 @@
+import fabricaDeObjetosDePrueba.*
+
+describe "Cuándo es visible el contenido privado" {
+	fixture {
+		fabrica.configurarContactos()
+	}
+	
+	test "Una publicacion privada la puede ver quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionPrivada()
+		assert.that(contenido.esVisible(fabrica.creador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una publicacion privada la puede ver un contacto de quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearPublicacionPrivada()
+		assert.that(contenido.esVisible(fabrica.contactoDelCreador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una publicacion privada NO la puede ver un desconocido de quien la publicó" {
+		const contenido = fabrica.crearPublicacionPrivada()
+		assert.notThat(contenido.esVisible(fabrica.desconocido(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una historia privada la puede ver quien la publicó en cualquier fecha" {
+		const contenido = fabrica.crearHistoriaPrivada()
+		assert.that(contenido.esVisible(fabrica.creador(), fabrica.fechaLejanaAPublicacion()))
+	}
+	test "Una historia privada la puede ver un contacto de quien la publicó hasta un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaPrivada()
+		assert.that(contenido.esVisible(fabrica.contactoDelCreador(), fabrica.diaSiguienteAPublicacion()))
+	}
+	test "Una historia privada NO la puede ver un contacto de quien la publicó pasado más de un día después de su publicación" {
+		const contenido = fabrica.crearHistoriaPrivada()
+		assert.notThat(contenido.esVisible(fabrica.contactoDelCreador(), fabrica.diaSiguienteAPublicacion().plusDays(1)))
+	}
+	test "Una historia privada NO la puede ver un desconocido de quien la publicó, incluso si es reciente" {
+		const contenido = fabrica.crearHistoriaPrivada()
+		assert.notThat(contenido.esVisible(fabrica.desconocido(), fabrica.diaSiguienteAPublicacion()))
+	}
+}

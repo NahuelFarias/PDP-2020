@@ -1,0 +1,123 @@
+import fabricaDeObjetosDePrueba.*
+import usuario.*
+import redSocial.*
+
+object validador {
+	method seComportaComo(contenido1, contenido2, usuarios, fecha){
+		return usuarios.all {usuario => 
+			contenido1.esVisible(usuario, fecha)
+				== contenido2.esVisible(usuario, fecha)
+		}
+	}
+}
+
+/*
+ * ATENCIÓN:
+ * Sólo reemplazar el comentario con el TODO en los tests que siguen
+ * por la operación correspondiente.
+ * NO CAMBIAR EL RESTO DE LA LÓGICA DE PRUEBA.
+ */
+describe "Cambios en la configuración: público / privado" {
+	fixture {
+		fabrica.configurarContactos()
+	}
+	
+	test "Una publicación pública puede volverse privada y comportarse como tal" {
+		const contenido = fabrica.crearPublicacionPublica()
+		
+		contenido.tipoDePrivacidad(new Privada())
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearPublicacionPrivada(), 
+			fabrica.usuariosDePrueba(), fabrica.fechaLejanaAPublicacion()
+		))
+	}
+	
+	test "Una historia pública puede volverse privada y comportarse como tal" {
+		const contenido = fabrica.crearHistoriaPublica()
+		
+		contenido.tipoDePrivacidad(new Privada())
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaPrivada(), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion()
+		))
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaPrivada(), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion().plusDays(1)
+		))
+	}
+	
+	test "Una publicación privada puede volverse pública y comportarse como tal" {
+		const contenido = fabrica.crearPublicacionPrivada()
+		
+		contenido.tipoDePrivacidad(publica)
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearPublicacionPublica(), 
+			fabrica.usuariosDePrueba(), fabrica.fechaLejanaAPublicacion()
+		))
+	}
+	
+	test "Una historia privada puede volverse pública y comportarse como tal" {
+		const contenido = fabrica.crearHistoriaPrivada()
+		
+		contenido.tipoDePrivacidad(publica)
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaPublica(), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion()
+		))
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaPublica(), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion().plusDays(1)
+		))
+	}
+	
+}
+
+describe "Cambios en la configuración: lista negra" {	
+	const usuariosParaListaNegra = #{new Usuario(nombre = "Lola"), new Usuario(nombre = "Pepe")}
+	fixture {
+		fabrica.configurarContactos()
+		usuariosParaListaNegra.forEach {usuario => fabrica.creador().agregarContacto(usuario)}
+	}
+	test "Una historia pública puede cambiarse a lista negra y comportarse como tal" {
+		const contenido = fabrica.crearHistoriaPublica()
+		
+		contenido.tipoDePrivacidad(new NoVisible(listaNegra = usuariosParaListaNegra))
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion()
+		))
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion().plusDays(1)
+		))
+	}
+	
+	test "Una publicación privada puede cambiarse a lista negra y comportarse como tal" {
+		const contenido = fabrica.crearPublicacionPrivada()	
+		
+		contenido.tipoDePrivacidad(new NoVisible(listaNegra = usuariosParaListaNegra))
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearPublicacionConListaNegra(usuariosParaListaNegra), 
+			fabrica.usuariosDePrueba(), fabrica.fechaLejanaAPublicacion()
+		))
+	}
+	
+	test "Una historia con lista negra puede cambiarse a privada y comportarse como tal" {
+		const contenido = fabrica.crearHistoriaConListaNegra(usuariosParaListaNegra)
+		
+		contenido.tipoDePrivacidad(new Privada())
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaPrivada(), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion()
+		))
+		assert.that(validador.seComportaComo(contenido, fabrica.crearHistoriaPrivada(), 
+			fabrica.usuariosDePrueba(), fabrica.diaSiguienteAPublicacion().plusDays(1)
+		))
+	}
+	test "Una publicación con lista negra puede cambiarse a pública y comportarse como tal" {
+		const contenido = fabrica.crearPublicacionConListaNegra(usuariosParaListaNegra)
+		
+		contenido.tipoDePrivacidad(publica)
+		
+		assert.that(validador.seComportaComo(contenido, fabrica.crearPublicacionPublica(), 
+			fabrica.usuariosDePrueba(), fabrica.fechaLejanaAPublicacion()
+		))
+	}
+}
